@@ -1,10 +1,12 @@
 package com.arshdeep.campusflow.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @MappedSuperclass
+@Data
 public abstract class BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
