@@ -18,8 +18,7 @@ import java.util.List;
 public class Teacher extends  BaseEntity {
     @Column(nullable = false)
     private String name;
-    @Column(unique = true)
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(unique = true, nullable = false)
     private String employeeId;
 
     @OneToOne(fetch = FetchType.LAZY)

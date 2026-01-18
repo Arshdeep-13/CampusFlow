@@ -23,11 +23,11 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthUtil authUtil;
 
-    public String signIn(SignInRequest signInRequest){
+    public User signIn(SignInRequest signInRequest){
         Optional<User> user = userRepository.findByUsername(signInRequest.getUsername());
 
         if( user.isPresent() ){
-            return "User already exists";
+            return null; // User already exists
         }
 
         User newUser = User.builder()
@@ -36,9 +36,7 @@ public class AuthService {
                 .role(signInRequest.getRole())
                 .build();
 
-        userRepository.save(newUser);
-
-        return "User created successfully";
+        return userRepository.save(newUser);
     }
 
     public String logIn(LoginRequest loginRequest){

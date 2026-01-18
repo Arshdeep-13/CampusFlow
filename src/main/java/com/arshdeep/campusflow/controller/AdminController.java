@@ -3,9 +3,15 @@ package com.arshdeep.campusflow.controller;
 import com.arshdeep.campusflow.dto.request.CourseCreateRequest;
 import com.arshdeep.campusflow.dto.request.StudentCreateRequest;
 import com.arshdeep.campusflow.dto.request.StudentEditRequest;
+import com.arshdeep.campusflow.dto.request.SubjectCreateRequest;
+import com.arshdeep.campusflow.dto.request.SubjectEditRequest;
+import com.arshdeep.campusflow.dto.request.SubjectIdsRequest;
 import com.arshdeep.campusflow.dto.request.TeacherCreateRequest;
+import com.arshdeep.campusflow.dto.response.ApiResponse;
 import com.arshdeep.campusflow.service.AdminService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,72 +22,152 @@ public class AdminController {
     private final AdminService adminService;
 
     @PostMapping("/create/student")
-    public String createStudent(@RequestBody StudentCreateRequest studentCreateRequest) {
-        return adminService.createStudent(studentCreateRequest);
+    public ResponseEntity<ApiResponse> createStudent(@RequestBody StudentCreateRequest studentCreateRequest) {
+        String result = adminService.createStudent(studentCreateRequest);
+        ApiResponse response = ApiResponse.builder()
+                .message(result)
+                .success(true)
+                .build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/create/teacher")
-    public String createTeacher(@RequestBody TeacherCreateRequest teacherCreateRequest) {
-        return adminService.createTeacher(teacherCreateRequest);
+    public ResponseEntity<ApiResponse> createTeacher(@RequestBody TeacherCreateRequest teacherCreateRequest) {
+        String result = adminService.createTeacher(teacherCreateRequest);
+        ApiResponse response = ApiResponse.builder()
+                .message(result)
+                .success(true)
+                .build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/create/subject")
-    public String createSubject(@RequestBody String subjectName){
-        return adminService.createSubject(subjectName);
+    public ResponseEntity<ApiResponse> createSubject(@RequestBody SubjectCreateRequest subjectCreateRequest){
+        String result = adminService.createSubject(subjectCreateRequest.getName());
+        ApiResponse response = ApiResponse.builder()
+                .message(result)
+                .success(true)
+                .build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/create/course")
-    public String createCourse(@RequestBody CourseCreateRequest courseCreateRequest){
-        return adminService.createCourse(courseCreateRequest);
+    public ResponseEntity<ApiResponse> createCourse(@RequestBody CourseCreateRequest courseCreateRequest){
+        String result = adminService.createCourse(courseCreateRequest);
+        ApiResponse response = ApiResponse.builder()
+                .message(result)
+                .success(true)
+                .build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/edit/student")
-    public String editStudent(@RequestBody StudentEditRequest studentCreateRequest) {
-        return adminService.editStudent(studentCreateRequest);
+    public ResponseEntity<ApiResponse> editStudent(@RequestBody StudentEditRequest studentEditRequest) {
+        String result = adminService.editStudent(studentEditRequest);
+        boolean success = !result.contains("not found");
+        ApiResponse response = ApiResponse.builder()
+                .message(result)
+                .success(success)
+                .build();
+        return success ? ResponseEntity.ok(response) : ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
     @PostMapping("/edit/teacher/{teacherId}")
-    public String editTeacher(@RequestBody TeacherCreateRequest teacherCreateRequest, @PathVariable Long teacherId) {
-        return adminService.editTeacher(teacherCreateRequest, teacherId);
+    public ResponseEntity<ApiResponse> editTeacher(@RequestBody TeacherCreateRequest teacherCreateRequest, @PathVariable Long teacherId) {
+        String result = adminService.editTeacher(teacherCreateRequest, teacherId);
+        boolean success = !result.contains("not found");
+        ApiResponse response = ApiResponse.builder()
+                .message(result)
+                .success(success)
+                .build();
+        return success ? ResponseEntity.ok(response) : ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
     @PostMapping("/edit/subject/{subjectId}")
-    public String editSubject(@RequestBody String subjectName, @PathVariable Long subjectId){
-        return adminService.editSubject(subjectName, subjectId);
+    public ResponseEntity<ApiResponse> editSubject(@RequestBody SubjectEditRequest subjectEditRequest, @PathVariable Long subjectId){
+        String result = adminService.editSubject(subjectEditRequest.getName(), subjectId);
+        boolean success = !result.contains("not found");
+        ApiResponse response = ApiResponse.builder()
+                .message(result)
+                .success(success)
+                .build();
+        return success ? ResponseEntity.ok(response) : ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
     @PostMapping("/edit/course/{courseId}")
-    public String editCourse(@RequestBody CourseCreateRequest courseCreateRequest, @PathVariable Long courseId){
-        return adminService.editCourse(courseCreateRequest, courseId);
+    public ResponseEntity<ApiResponse> editCourse(@RequestBody CourseCreateRequest courseCreateRequest, @PathVariable Long courseId){
+        String result = adminService.editCourse(courseCreateRequest, courseId);
+        boolean success = !result.contains("not found");
+        ApiResponse response = ApiResponse.builder()
+                .message(result)
+                .success(success)
+                .build();
+        return success ? ResponseEntity.ok(response) : ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
     @PostMapping("/delete/student/{studentId}")
-    public String deleteStudent(@PathVariable Long studentId) {
-        return adminService.deleteStudent(studentId);
+    public ResponseEntity<ApiResponse> deleteStudent(@PathVariable Long studentId) {
+        String result = adminService.deleteStudent(studentId);
+        boolean success = !result.contains("not found");
+        ApiResponse response = ApiResponse.builder()
+                .message(result)
+                .success(success)
+                .build();
+        return success ? ResponseEntity.ok(response) : ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
     @PostMapping("/delete/teacher/{teacherId}")
-    public String deleteTeacher(@PathVariable Long teacherId) {
-        return adminService.deleteTeacher(teacherId);
+    public ResponseEntity<ApiResponse> deleteTeacher(@PathVariable Long teacherId) {
+        String result = adminService.deleteTeacher(teacherId);
+        boolean success = !result.contains("not found");
+        ApiResponse response = ApiResponse.builder()
+                .message(result)
+                .success(success)
+                .build();
+        return success ? ResponseEntity.ok(response) : ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
     @PostMapping("/delete/subject/{subjectId}")
-    public String deleteSubject(@PathVariable Long subjectId) {
-        return adminService.deleteSubject(subjectId);
+    public ResponseEntity<ApiResponse> deleteSubject(@PathVariable Long subjectId) {
+        String result = adminService.deleteSubject(subjectId);
+        boolean success = !result.contains("not found");
+        ApiResponse response = ApiResponse.builder()
+                .message(result)
+                .success(success)
+                .build();
+        return success ? ResponseEntity.ok(response) : ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
     @PostMapping("/delete/course/{courseId}")
-    public String deleteCourse(@PathVariable Long courseId) {
-        return adminService.deleteCourse(courseId);
+    public ResponseEntity<ApiResponse> deleteCourse(@PathVariable Long courseId) {
+        String result = adminService.deleteCourse(courseId);
+        boolean success = !result.contains("not found");
+        ApiResponse response = ApiResponse.builder()
+                .message(result)
+                .success(success)
+                .build();
+        return success ? ResponseEntity.ok(response) : ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
     @PostMapping("/assign/student/{studentId}/course/{courseId}")
-    public String assignStudentToCourse(@PathVariable Long studentId,@PathVariable Long courseId){
-        return adminService.assignStudentToCourse(studentId, courseId);
+    public ResponseEntity<ApiResponse> assignStudentToCourse(@PathVariable Long studentId,@PathVariable Long courseId){
+        String result = adminService.assignStudentToCourse(studentId, courseId);
+        boolean success = !result.contains("not found");
+        ApiResponse response = ApiResponse.builder()
+                .message(result)
+                .success(success)
+                .build();
+        return success ? ResponseEntity.ok(response) : ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
     @PostMapping("/assign/teacher/{teacherId}/subjects")
-    public String assignTeacherToSubjects(@PathVariable Long teacherId, @RequestBody Long[] subjectIds){
-        return adminService.assignTeacherToSubjects(teacherId, subjectIds);
+    public ResponseEntity<ApiResponse> assignTeacherToSubjects(@PathVariable Long teacherId, @RequestBody SubjectIdsRequest subjectIdsRequest){
+        String result = adminService.assignTeacherToSubjects(teacherId, subjectIdsRequest.getSubjectIds());
+        boolean success = !result.contains("not found");
+        ApiResponse response = ApiResponse.builder()
+                .message(result)
+                .success(success)
+                .build();
+        return success ? ResponseEntity.ok(response) : ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 }
