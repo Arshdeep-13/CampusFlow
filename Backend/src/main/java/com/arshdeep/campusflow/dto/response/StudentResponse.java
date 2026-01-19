@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 public class StudentResponse {
     private Long id;
     private String name;
-    private String rollNumber;
     private Long courseId;
     private String courseName;
     private String courseCode;

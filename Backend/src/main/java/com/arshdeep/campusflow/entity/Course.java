@@ -22,6 +22,7 @@ public class Course extends BaseEntity{
     private String courseCode;
 
     @OneToMany(mappedBy = "course")
+    @JsonIgnore
     List<Student> students;
 
     @OneToMany(mappedBy = "course")

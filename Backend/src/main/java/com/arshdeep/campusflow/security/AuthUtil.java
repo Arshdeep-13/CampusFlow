@@ -24,9 +24,10 @@ public class AuthUtil {
         return Jwts.builder()
                 .setSubject(user.getUsername())
                 .claim("userId", user.getId().toString())
+                .claim("role", user.getRole())
                 .signWith(getJwtSecret())
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 10)) // 10 minutes
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30)) // 30 minutes
                 .compact();
     }
 

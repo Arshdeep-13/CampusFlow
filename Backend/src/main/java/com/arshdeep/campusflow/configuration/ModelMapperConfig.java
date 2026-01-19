@@ -28,11 +28,15 @@ public class ModelMapperConfig {
         modelMapper.addMappings(new PropertyMap<Attendance, AttendanceResponse>() {
             @Override
             protected void configure() {
-                map().setStudentId(source.getStudent().getId());
-                map().setStudentName(source.getStudent().getName());
-                map().setStudentRollNumber(source.getStudent().getRollNumber());
-                map().setSubjectId(source.getSubject().getId());
-                map().setSubjectName(source.getSubject().getName());
+                map().setId(source.getId());
+                map().setPresent(source.isPresent());
+                map().setMarkedById(source.getMarkedById());
+                map().setCreatedAt(source.getCreatedAt());
+                map().setUpdatedAt(source.getUpdatedAt());
+                map().setStudentId(source.getStudent() != null ? source.getStudent().getId() : null);
+                map().setStudentName(source.getStudent() != null ? source.getStudent().getName() : null);
+                map().setSubjectId(source.getSubject() != null ? source.getSubject().getId() : null);
+                map().setSubjectName(source.getSubject() != null ? source.getSubject().getName() : null);
             }
         });
 
@@ -40,11 +44,15 @@ public class ModelMapperConfig {
         modelMapper.addMappings(new PropertyMap<Marks, MarksResponse>() {
             @Override
             protected void configure() {
-                map().setStudentId(source.getStudent().getId());
-                map().setStudentName(source.getStudent().getName());
-                map().setStudentRollNumber(source.getStudent().getRollNumber());
-                map().setSubjectId(source.getSubject().getId());
-                map().setSubjectName(source.getSubject().getName());
+                map().setId(source.getId());
+                map().setMarks(source.getMarks());
+                map().setMarkedById(source.getMarkedById());
+                map().setCreatedAt(source.getCreatedAt());
+                map().setUpdatedAt(source.getUpdatedAt());
+                map().setStudentId(source.getStudent() != null ? source.getStudent().getId() : null);
+                map().setStudentName(source.getStudent() != null ? source.getStudent().getName() : null);
+                map().setSubjectId(source.getSubject() != null ? source.getSubject().getId() : null);
+                map().setSubjectName(source.getSubject() != null ? source.getSubject().getName() : null);
             }
         });
 
@@ -52,6 +60,10 @@ public class ModelMapperConfig {
         modelMapper.addMappings(new PropertyMap<Student, StudentResponse>() {
             @Override
             protected void configure() {
+                map().setId(source.getId());
+                map().setName(source.getName());
+                map().setCreatedAt(source.getCreatedAt());
+                map().setUpdatedAt(source.getUpdatedAt());
                 map().setCourseId(source.getCourse() != null ? source.getCourse().getId() : null);
                 map().setCourseName(source.getCourse() != null ? source.getCourse().getName() : null);
                 map().setCourseCode(source.getCourse() != null ? source.getCourse().getCourseCode() : null);
@@ -62,12 +74,16 @@ public class ModelMapperConfig {
         modelMapper.addMappings(new PropertyMap<Subject, SubjectResponse>() {
             @Override
             protected void configure() {
+                map().setId(source.getId());
+                map().setName(source.getName());
+                map().setCreatedAt(source.getCreatedAt());
+                map().setUpdatedAt(source.getUpdatedAt());
                 map().setCourseId(source.getCourse() != null ? source.getCourse().getId() : null);
                 map().setCourseName(source.getCourse() != null ? source.getCourse().getName() : null);
                 map().setCourseCode(source.getCourse() != null ? source.getCourse().getCourseCode() : null);
                 map().setTeacherId(source.getTeacher() != null ? source.getTeacher().getId() : null);
                 map().setTeacherName(source.getTeacher() != null ? source.getTeacher().getName() : null);
-                map().setTeacherEmployeeId(source.getTeacher() != null ? source.getTeacher().getEmployeeId() : null);
+                skip(destination.getStudents()); // Skip students field - we'll set it manually in the controller
             }
         });
 

@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class TeacherCreateRequest {
     private String name;
-    private String employeeId;
+    private String password;
 }

@@ -1,5 +1,6 @@
 package com.arshdeep.campusflow.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,14 +16,15 @@ import lombok.NoArgsConstructor;
 public class Student extends  BaseEntity{
     @Column(nullable = false)
     private String name;
-    @Column(unique = true, nullable = false)
-    private String rollNumber;
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
+    @JsonIgnore
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "course_id", nullable = false)
+    @JoinColumn(name = "course_id")
     private Course course;
+
+
 }

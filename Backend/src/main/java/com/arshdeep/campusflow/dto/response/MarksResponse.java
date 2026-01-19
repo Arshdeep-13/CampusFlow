@@ -17,7 +17,6 @@ public class MarksResponse {
     private Long markedById;
     private Long studentId;
     private String studentName;
-    private String studentRollNumber;
     private Long subjectId;
     private String subjectName;
     private LocalDateTime createdAt;

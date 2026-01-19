@@ -1,9 +1,12 @@
 package com.arshdeep.campusflow.service;
 
+import com.arshdeep.campusflow.dto.response.TeacherCountResponse;
 import com.arshdeep.campusflow.entity.*;
 import com.arshdeep.campusflow.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,20 +21,34 @@ public class TeacherService {
     private final StudentRepository studentRepository;
     private final MarksRepository marksRepository;
 
+    @Transactional(readOnly = true)
     public List<Subject> getSubjectsByTeacherId(Integer teacherId) {
         try {
             List<Subject> teacherSubjects = subjectRepository.findByTeacherId(teacherId);
+            // Eagerly load course and students to avoid lazy loading issues
+            teacherSubjects.forEach(subject -> {
+                if (subject.getCourse() != null && subject.getCourse().getStudents() != null) {
+                    // Force loading of students by accessing the list
+                    subject.getCourse().getStudents().size();
+                }
+            });
             return teacherSubjects;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
+    @Transactional(readOnly = true)
     public List<Student> getStudentsOfSubject(Long subjectId, Long teacherId) {
         Optional<Subject> subject = subjectRepository.findById(subjectId);
 
-        if( subject.isPresent() && subject.get().getTeacher().equals(teacherId) ){
-            return subject.get().getCourse().getStudents();
+        if( subject.isPresent() && subject.get().getTeacher() != null && subject.get().getTeacher().getId().equals(teacherId) ){
+            // Ensure course and students are loaded
+            if (subject.get().getCourse() != null && subject.get().getCourse().getStudents() != null) {
+                // Force loading of students
+                subject.get().getCourse().getStudents().size();
+                return subject.get().getCourse().getStudents();
+            }
         }
 
         return List.of();
@@ -88,6 +105,26 @@ public class TeacherService {
             marksRepository.save(marksObj);
 
             return "Marks added successfully";
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public TeacherCountResponse getTeacherCount() {
+        try {
+            Long count = teacherRepository.count();
+            return TeacherCountResponse.builder()
+                    .teacherCount(count)
+                    .build();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<Teacher> getAllTeachers() {
+        try {
+            List<Teacher> teachers = teacherRepository.findAll();
+            return teachers;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

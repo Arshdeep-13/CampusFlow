@@ -5,8 +5,10 @@ import com.arshdeep.campusflow.dto.request.MarksRequest;
 import com.arshdeep.campusflow.dto.response.ApiResponse;
 import com.arshdeep.campusflow.dto.response.StudentResponse;
 import com.arshdeep.campusflow.dto.response.SubjectResponse;
+import com.arshdeep.campusflow.dto.response.TeacherCountResponse;
 import com.arshdeep.campusflow.entity.Student;
 import com.arshdeep.campusflow.entity.Subject;
+import com.arshdeep.campusflow.entity.Teacher;
 import com.arshdeep.campusflow.service.TeacherService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -24,20 +26,74 @@ public class TeacherController {
     private final TeacherService teacherService;
     private final ModelMapper modelMapper;
 
+    @GetMapping
+    public ResponseEntity<List<Teacher>> getAllTeachers() {
+        List<Teacher> teachers = teacherService.getAllTeachers();
+        return ResponseEntity.ok(teachers);
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<TeacherCountResponse> teacherCount(Integer teacherCount) {
+        return ResponseEntity.ok(teacherService.getTeacherCount());
+    }
+
     @GetMapping("/{teacherId}/subjects")
     public ResponseEntity<List<SubjectResponse>> getSubjectsByTeacherId(@PathVariable Integer teacherId){
-        List<Subject> subjects = teacherService.getSubjectsByTeacherId(teacherId);
-        List<SubjectResponse> responses = subjects.stream()
-                .map(subject -> modelMapper.map(subject, SubjectResponse.class))
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(responses);
+        try {
+            List<Subject> subjects = teacherService.getSubjectsByTeacherId(teacherId);
+            List<SubjectResponse> responses = subjects.stream()
+                    .map(subject -> {
+                        // Manually map to avoid ModelMapper issues with students field
+                        SubjectResponse response = SubjectResponse.builder()
+                                .id(subject.getId())
+                                .name(subject.getName())
+                                .createdAt(subject.getCreatedAt())
+                                .updatedAt(subject.getUpdatedAt())
+                                .courseId(subject.getCourse() != null ? subject.getCourse().getId() : null)
+                                .courseName(subject.getCourse() != null ? subject.getCourse().getName() : null)
+                                .courseCode(subject.getCourse() != null ? subject.getCourse().getCourseCode() : null)
+                                .teacherId(subject.getTeacher() != null ? subject.getTeacher().getId() : null)
+                                .teacherName(subject.getTeacher() != null ? subject.getTeacher().getName() : null)
+                                .build();
+                        
+                        // Include students from the course
+                        if (subject.getCourse() != null && subject.getCourse().getStudents() != null) {
+                            response.setStudents(subject.getCourse().getStudents().stream()
+                                    .map(student -> StudentResponse.builder()
+                                            .id(student.getId())
+                                            .name(student.getName())
+                                            .createdAt(student.getCreatedAt())
+                                            .updatedAt(student.getUpdatedAt())
+                                            .courseId(student.getCourse() != null ? student.getCourse().getId() : null)
+                                            .courseName(student.getCourse() != null ? student.getCourse().getName() : null)
+                                            .courseCode(student.getCourse() != null ? student.getCourse().getCourseCode() : null)
+                                            .build())
+                                    .collect(Collectors.toList()));
+                        } else {
+                            response.setStudents(List.of());
+                        }
+                        return response;
+                    })
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(responses);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @GetMapping("/{teacherId}/subject/{subjectId}/students")
     public ResponseEntity<List<StudentResponse>> getStudentsOfSubject(@PathVariable Long subjectId, @PathVariable Long teacherId){
         List<Student> students = teacherService.getStudentsOfSubject(subjectId, teacherId);
         List<StudentResponse> responses = students.stream()
-                .map(student -> modelMapper.map(student, StudentResponse.class))
+                .map(student -> StudentResponse.builder()
+                        .id(student.getId())
+                        .name(student.getName())
+                        .createdAt(student.getCreatedAt())
+                        .updatedAt(student.getUpdatedAt())
+                        .courseId(student.getCourse() != null ? student.getCourse().getId() : null)
+                        .courseName(student.getCourse() != null ? student.getCourse().getName() : null)
+                        .courseCode(student.getCourse() != null ? student.getCourse().getCourseCode() : null)
+                        .build())
                 .collect(Collectors.toList());
         return ResponseEntity.ok(responses);
     }

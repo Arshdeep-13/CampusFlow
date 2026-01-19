@@ -18,11 +18,10 @@ import java.util.List;
 public class Teacher extends  BaseEntity {
     @Column(nullable = false)
     private String name;
-    @Column(unique = true, nullable = false)
-    private String employeeId;
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
+    @JsonIgnore
     private User user;
 
     @OneToMany(mappedBy = "teacher")
